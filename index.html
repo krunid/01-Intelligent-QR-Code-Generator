@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องสร้าง QR Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+        /* Custom styles for color input to show the color swatch */
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+            border: 2px solid #e2e8f0;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-500">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white text-center mb-2">เครื่องสร้าง QR Code อัจฉริยะ</h1>
+                <p class="text-gray-600 dark:text-gray-300 text-center mb-8">ปรับแต่ง QR Code ของคุณได้ง่ายๆ และดาวน์โหลดได้ทันที</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-0">
+                <!-- Control Panel -->
+                <div class="lg:col-span-2 p-6 lg:p-8 bg-gray-50 dark:bg-gray-800 border-t lg:border-t-0 lg:border-r border-gray-200 dark:border-gray-700">
+                    <div class="space-y-6">
+                        <!-- URL/Text Input -->
+                        <div>
+                            <label for="text-input" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">URL หรือ ข้อความ</label>
+                            <input type="text" id="text-input" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white" value="https://www.google.com" placeholder="เช่น https://example.com">
+                        </div>
+
+                        <!-- Color Pickers -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">สี QR Code</label>
+                                <div class="flex items-center gap-2 p-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                                    <input type="color" id="color-dot" value="#000000">
+                                    <span id="color-dot-hex" class="font-mono text-gray-600 dark:text-gray-400">#000000</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">สีพื้นหลัง</label>
+                                 <div class="flex items-center gap-2 p-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg">
+                                    <input type="color" id="color-bg" value="#ffffff">
+                                    <span id="color-bg-hex" class="font-mono text-gray-600 dark:text-gray-400">#FFFFFF</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Size Input -->
+                        <div>
+                            <label for="size-input" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">ขนาด (พิกเซล)</label>
+                            <input type="number" id="size-input" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white" value="300" min="50" max="2000" step="10">
+                        </div>
+
+                        <!-- Logo Input -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">โลโก้ (ไฟล์ .png, .jpg)</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="file" id="logo-input" accept="image/png, image/jpeg" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/40 dark:file:text-blue-300 dark:hover:file:bg-blue-900/60 cursor-pointer">
+                                <button id="remove-logo-btn" title="ลบโลโก้" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Download Buttons -->
+                        <div class="pt-4 border-t border-gray-200 dark:border-gray-600">
+                            <p class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3">ดาวน์โหลด</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button id="download-png-btn" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+                                    ดาวน์โหลด PNG
+                                </button>
+                                <button id="download-jpg-btn" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+                                    ดาวน์โหลด JPG
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- QR Code Preview -->
+                <div class="lg:col-span-3 p-6 lg:p-8 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
+                    <div class="w-full max-w-sm aspect-square bg-white dark:bg-gray-700 rounded-xl shadow-inner p-4 flex items-center justify-center">
+                        <div id="canvas"></div>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">ตัวอย่าง QR Code</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const textInput = document.getElementById('text-input');
+            const sizeInput = document.getElementById('size-input');
+            const dotColorInput = document.getElementById('color-dot');
+            const bgColorInput = document.getElementById('color-bg');
+            const logoInput = document.getElementById('logo-input');
+            const removeLogoBtn = document.getElementById('remove-logo-btn');
+            const pngBtn = document.getElementById('download-png-btn');
+            const jpgBtn = document.getElementById('download-jpg-btn');
+            const canvasContainer = document.getElementById('canvas');
+            const dotColorHex = document.getElementById('color-dot-hex');
+            const bgColorHex = document.getElementById('color-bg-hex');
+            
+            let logoImage = null;
+
+            // --- QR Code Instance ---
+            const qrCode = new QRCodeStyling({
+                width: 300,
+                height: 300,
+                type: 'svg',
+                data: textInput.value,
+                image: '', // Start with no image
+                dotsOptions: {
+                    color: '#000000',
+                    type: 'rounded'
+                },
+                backgroundOptions: {
+                    color: '#ffffff',
+                },
+                imageOptions: {
+                    crossOrigin: 'anonymous',
+                    margin: 10,
+                    imageSize: 0.3 // 30% of QR code size
+                },
+                cornersSquareOptions: {
+                    type: "extra-rounded"
+                },
+                cornersDotOptions: {
+                    type: "dot"
+                }
+            });
+
+            // Initial render
+            qrCode.append(canvasContainer);
+
+            // --- Event Listeners ---
+
+            // Function to update QR code based on current settings
+            const updateQrCode = () => {
+                const options = {
+                    width: parseInt(sizeInput.value, 10) || 300,
+                    height: parseInt(sizeInput.value, 10) || 300,
+                    data: textInput.value,
+                    dotsOptions: {
+                        color: dotColorInput.value
+                    },
+                    backgroundOptions: {
+                        color: bgColorInput.value
+                    },
+                    image: logoImage // Use the stored logo image
+                };
+                qrCode.update(options);
+            };
+
+            // Listen for changes on all inputs
+            textInput.addEventListener('input', updateQrCode);
+            sizeInput.addEventListener('input', updateQrCode);
+            dotColorInput.addEventListener('input', () => {
+                dotColorHex.textContent = dotColorInput.value.toUpperCase();
+                updateQrCode();
+            });
+            bgColorInput.addEventListener('input', () => {
+                bgColorHex.textContent = bgColorInput.value.toUpperCase();
+                updateQrCode();
+            });
+
+            // Handle logo file selection
+            logoInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    logoImage = reader.result; // Store image as base64
+                    updateQrCode(); // Update QR with the new logo
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Handle logo removal
+            removeLogoBtn.addEventListener('click', () => {
+                logoImage = null; // Clear the stored logo
+                logoInput.value = ''; // Reset the file input
+                updateQrCode(); // Update QR without the logo
+            });
+
+            // Handle downloads
+            pngBtn.addEventListener('click', () => {
+                qrCode.download({ name: 'qr-code', extension: 'png' });
+            });
+
+            jpgBtn.addEventListener('click', () => {
+                qrCode.download({ name: 'qr-code', extension: 'jpeg' });
+            });
+            
+            // Initial hex display
+            dotColorHex.textContent = dotColorInput.value.toUpperCase();
+            bgColorHex.textContent = bgColorInput.value.toUpperCase();
+        });
+    </script>
+</body>
+</html>
